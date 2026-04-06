@@ -1,0 +1,13 @@
+{
+  "mcp": {
+    "servers": {
+      "wechat-template": {
+        "command": "node",
+        "args": [
+          "src/mcp-server.js"
+        ],
+        "cwd": "C:\\path\\to\\weixinpaiban"
+      }
+    }
+  }
+}

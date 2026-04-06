@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>公众号社论排版生成器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .form-input {
+            width: 100%;
+            padding: 0.65rem 0.8rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.75rem;
+            margin-top: 0.35rem;
+            font-size: 0.95rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #b91c1c;
+            box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.12);
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-stone-100 p-3 font-sans text-stone-900 sm:p-5 md:p-8">
+    <div class="mx-auto max-w-7xl">
+        <header class="mb-6 text-center md:mb-8">
+            <p class="mb-2 inline-flex rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-700 sm:px-4 sm:text-sm">微信公众号模板</p>
+            <h1 class="mb-2 text-2xl font-bold tracking-tight text-stone-900 sm:mb-3 sm:text-3xl">公众号社论排版编辑器</h1>
+            <p class="mx-auto max-w-3xl text-xs leading-6 text-stone-600 sm:text-sm md:text-base">
+                左侧输入文章内容，右侧查看公众号效果。复制时输出的是适合微信公众号编辑器粘贴的内联样式 HTML，页面可以作为静态部署使用。
+            </p>
+        </header>
+
+        <!-- 将双栏布局的断点调整为 lg，适应平板横屏和桌面设备 -->
+        <div class="grid grid-cols-1 gap-5 lg:grid-cols-[1.05fr_0.95fr] lg:gap-8">
+            <section class="rounded-[1.5rem] border border-stone-200 bg-white p-4 shadow-sm sm:p-6 lg:sticky lg:top-6 md:rounded-3xl">
+                <div class="mb-4 flex flex-col gap-2 border-b border-stone-200 pb-4 sm:mb-5 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h2 class="text-lg font-semibold text-stone-900 sm:text-xl">编辑内容</h2>
+                        <p class="mt-1 text-xs text-stone-500 sm:text-sm">适合权威政经评论、深度观察、社论风格稿件。</p>
+                    </div>
+                    <span class="w-fit rounded-full bg-stone-100 px-3 py-1 text-[10px] font-medium text-stone-600 sm:text-xs">模板源：当前页面</span>
+                </div>
+
+                <div class="space-y-4 sm:space-y-5">
+                    <div style="display:none">
+                        <label class="block text-sm font-medium text-stone-700" for="input-title">文章标题</label>
+                        <input type="text" id="input-title" class="form-input" value="时代呼唤真正的长期主义：拒绝浮躁，回归本质">
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <div style="display:none">
+                            <label class="block text-sm font-medium text-stone-700" for="input-author">公众号名称 / 作者</label>
+                            <input type="text" id="input-author" class="form-input" value="政经观察局">
+                        </div>
+                        <div style="display:none">
+                            <label class="block text-sm font-medium text-stone-700" for="input-date">发布日期</label>
+                            <input type="text" id="input-date" class="form-input" value="今天">
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+                            <label class="block text-sm font-medium text-stone-700" for="input-content">正文内容</label>
+                            <span class="text-[11px] leading-snug text-stone-400 sm:text-xs">内容为 Markdown 格式，支持常见语法；单换行即视为新的块。</span>
+                        </div>
+                        <!-- 为移动端设置了默认自适应高度 -->
+                        <textarea id="input-content" class="form-input mt-2 min-h-[300px] resize-y leading-7 md:min-h-[400px]"></textarea>
+                    </div>
+
+                    <div class="rounded-2xl bg-stone-50 p-3 text-xs leading-5 text-stone-600 sm:p-4 sm:text-sm sm:leading-6">
+                        <p class="font-medium text-stone-800">MCP 可直接复用这些字段：</p>
+                        <p class="mt-1">title、author、date、content。`content` 的块级语法与当前页面完全一致。</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <button id="copy-button" type="button" class="inline-flex items-center justify-center rounded-2xl bg-red-700 px-4 py-2.5 font-semibold text-white transition hover:bg-red-800 sm:py-3 text-sm sm:text-base">
+                            复制排版到微信
+                        </button>
+                        <button id="download-button" type="button" class="inline-flex items-center justify-center rounded-2xl border border-stone-300 bg-white px-4 py-2.5 font-semibold text-stone-700 transition hover:bg-stone-50 sm:py-3 text-sm sm:text-base">
+                            下载 HTML 文件
+                        </button>
+                    </div>
+
+                    <p id="status-message" class="hidden rounded-2xl px-4 py-3 text-sm font-medium"></p>
+                </div>
+            </section>
+
+            <section class="space-y-5 lg:space-y-6">
+                <div class="rounded-[1.5rem] border border-stone-200 bg-white p-4 shadow-sm sm:p-5 md:rounded-3xl">
+                    <div class="mb-4 flex items-center justify-between gap-2">
+                        <div>
+                            <h2 class="text-lg font-semibold text-stone-900 sm:text-xl">公众号预览</h2>
+                            <p class="mt-1 text-xs text-stone-500 sm:text-sm">展示的是将被复制的内容。</p>
+                        </div>
+                        <span class="hidden rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 sm:inline-block">内联安全</span>
+                    </div>
+
+                    <div class="flex justify-center rounded-[1.5rem] bg-stone-100 p-2 sm:p-4 md:rounded-[2rem]">
+                        <!-- 修改了高度 h-[820px] 适配移动端视口 (h-[65vh]) -->
+                        <div class="no-scrollbar h-[65vh] min-h-[450px] w-full max-w-[430px] overflow-y-auto rounded-[1.25rem] border border-stone-300 bg-white shadow-xl lg:h-[820px] md:rounded-[2rem]">
+                            <div id="preview-shell"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-[1.5rem] border border-stone-200 bg-white p-4 shadow-sm sm:p-5 md:rounded-3xl">
+                    <div class="mb-3 flex items-center justify-between gap-2">
+                        <h2 class="text-base font-semibold text-stone-900 sm:text-lg">实时生成的 HTML</h2>
+                        <button id="copy-html-button" type="button" class="rounded-xl border border-stone-300 px-3 py-1.5 text-xs font-medium text-stone-700 transition hover:bg-stone-50 sm:py-2 sm:text-sm">
+                            复制源码
+                        </button>
+                    </div>
+                    <textarea id="html-output" class="form-input h-32 min-h-[150px] font-mono text-[10px] leading-5 text-stone-700 sm:min-h-[260px] sm:text-xs sm:leading-6" readonly></textarea>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@13.0.1/dist/markdown-it.min.js"></script>
+    <script src="./src/wechat-template.js"></script>
+    <script>
+        const { renderWechatArticleHtml, renderWechatArticleDocument, renderPlainText } = window.WechatTemplate;
+
+        const inputs = {
+            title: document.getElementById("input-title"),
+            author: document.getElementById("input-author"),
+            date: document.getElementById("input-date"),
+            content: document.getElementById("input-content")
+        };
+
+        const previewShell = document.getElementById("preview-shell");
+        const htmlOutput = document.getElementById("html-output");
+        const statusMessage = document.getElementById("status-message");
+
+        function getArticlePayload() {
+            return {
+                content: inputs.content.value
+            };
+        }
+
+        function showStatus(message, kind) {
+            statusMessage.textContent = message;
+            statusMessage.className = "rounded-2xl px-4 py-3 text-sm font-medium mt-4";
+
+            if (kind === "success") {
+                statusMessage.classList.add("bg-emerald-50", "text-emerald-700");
+            } else {
+                statusMessage.classList.add("bg-red-50", "text-red-700");
+            }
+
+            statusMessage.classList.remove("hidden");
+            window.clearTimeout(showStatus.timer);
+            showStatus.timer = window.setTimeout(() => {
+                statusMessage.classList.add("hidden");
+            }, 3200);
+        }
+
+        function updatePreview() {
+            const payload = getArticlePayload();
+            const fragment = renderWechatArticleHtml(payload);
+            previewShell.innerHTML = fragment;
+            htmlOutput.value = fragment;
+        }
+
+        function fallbackCopyHtml(html) {
+            const container = document.createElement("div");
+            container.contentEditable = "true";
+            container.style.position = "fixed";
+            container.style.left = "-9999px";
+            container.style.top = "0";
+            container.innerHTML = html;
+            document.body.appendChild(container);
+
+            const selection = window.getSelection();
+            const range = document.createRange();
+            range.selectNodeContents(container);
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            const copied = document.execCommand("copy");
+
+            selection.removeAllRanges();
+            document.body.removeChild(container);
+
+            if (!copied) {
+                throw new Error("copy-failed");
+            }
+        }
+
+        async function copyRenderedArticle() {
+            const payload = getArticlePayload();
+            const html = renderWechatArticleHtml(payload);
+            const documentHtml = (typeof renderWechatArticleDocument === "function") ? renderWechatArticleDocument(payload) : html;
+            const plainText = renderPlainText(payload);
+
+            function protectDiaryTitle(htmlString) {
+                try {
+                    const container = document.createElement('div');
+                    container.innerHTML = htmlString;
+                    const el = container.querySelector('[data-diary-title]');
+                    if (el && el.textContent && el.textContent.trim()) {
+                        const joined = Array.from(el.textContent).join('\u2060');
+                        el.textContent = joined;
+                    }
+                    return container.innerHTML;
+                } catch (e) {
+                    return htmlString;
+                }
+            }
+
+            try {
+                if (navigator.clipboard && window.ClipboardItem && navigator.clipboard.write) {
+                    const patched = protectDiaryTitle(documentHtml);
+                    const item = new ClipboardItem({
+                        "text/html": new Blob([patched], { type: "text/html;charset=utf-8" }),
+                        "text/plain": new Blob([plainText], { type: "text/plain;charset=utf-8" })
+                    });
+                    await navigator.clipboard.write([item]);
+                } else {
+                    const patched = protectDiaryTitle(html);
+                    fallbackCopyHtml(patched);
+                }
+
+                showStatus("已复制公众号排版内容，可直接粘贴到微信编辑器。", "success");
+            } catch (error) {
+                try {
+                    fallbackCopyHtml(html);
+                    showStatus("已通过兼容模式复制富文本内容。", "success");
+                } catch (fallbackError) {
+                    showStatus("复制失败，请复制下方 HTML 源码或手动选中右侧预览。", "error");
+                }
+            }
+        }
+
+        async function copyHtmlSource() {
+            try {
+                await navigator.clipboard.writeText(htmlOutput.value);
+                showStatus("HTML 源码已复制。", "success");
+            } catch (error) {
+                showStatus("复制 HTML 失败，请手动复制。", "error");
+            }
+        }
+
+        function downloadHtmlDocument() {
+            const payload = getArticlePayload();
+            const documentHtml = renderWechatArticleDocument(payload);
+            const blob = new Blob([documentHtml], { type: "text/html;charset=utf-8" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            const safeTitle = (payload.title || "wechat-article")
+                .replace(/[\\/:*?\"<>|]/g, "-")
+                .slice(0, 60);
+
+            link.href = url;
+            link.download = safeTitle + ".html";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            showStatus("HTML 文件已下载。", "success");
+        }
+
+        Object.values(inputs).forEach((input) => {
+            input.addEventListener("input", updatePreview);
+        });
+
+        document.getElementById("copy-button").addEventListener("click", copyRenderedArticle);
+        document.getElementById("copy-html-button").addEventListener("click", copyHtmlSource);
+        document.getElementById("download-button").addEventListener("click", downloadHtmlDocument);
+
+        // 兼容原有的 wechat-template.js 延迟加载
+        window.addEventListener('load', () => {
+            if (window.WechatTemplate) {
+                updatePreview();
+            } else {
+                setTimeout(updatePreview, 500);
+            }
+        });
+    </script>
+</body>
+</html>
