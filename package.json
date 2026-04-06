@@ -1,0 +1,13 @@
+{
+  "name": "weixinpaiban",
+  "version": "1.0.0",
+  "private": true,
+  "description": "WeChat Official Account template renderer as a static deployable page",
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "markdown-it": "^13.0.1"
+  }
+}
