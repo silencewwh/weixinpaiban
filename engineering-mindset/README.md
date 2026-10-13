@@ -1,12 +1,22 @@
 # 你是否有当工程师的潜质？
 
-50 题工程思维倾向测试，单文件静态网页。此目录独立于仓库原有的微信排版页面，不修改原页面。
+50 题工程思维倾向测试，纯静态网页。此目录独立于仓库原有的微信排版页面，不修改原页面。
 
-## 使用
+在线测试：https://silencewwh.github.io/weixinpaiban/engineering-mindset/
 
-使用支持 JavaScript 的浏览器打开 `index.html`。无需安装依赖、登录账号、服务器接口或外部字体。
+## 使用与部署
 
-GitHub Pages 发布分支：`gh-pages`。网站路径：`/weixinpaiban/engineering-mindset/`。
+使用支持 JavaScript 的浏览器访问在线测试。无需安装依赖、登录账号、服务器接口或外部字体。
+
+GitHub Pages 发布分支：`gh-pages`。网站路径：`/weixinpaiban/engineering-mindset/`。提交到发布分支后，由仓库已有的 Pages 流程自动发布。
+
+部署版保留原网页的题库、样式与运行逻辑，仅将原单文件中的样式和脚本分离为三个文件，便于维护：
+
+- `index.html`：页面结构，以及内嵌的完整题库和选项分数。
+- `styles.css`：原版响应式样式。
+- `app.js`：原版作答、计分、本地进度保存、雷达图和结果导出逻辑。
+
+本地使用时请保持这三个文件位于同一目录，再打开 `index.html`。无需构建或安装依赖。
 
 ## 内容
 
@@ -24,10 +34,12 @@ GitHub Pages 发布分支：`gh-pages`。网站路径：`/weixinpaiban/engineeri
 
 ## 数据与边界
 
-题库、作答和计分在浏览器中完成，不主动向网络发送答案。进度保存在当前浏览器，存储键为 `engineering-mindset-v1`。
+题库、作答和计分在浏览器中完成，页面脚本不主动向网络发送答案。进度保存在当前浏览器，存储键为 `engineering-mindset-v1`。托管平台负责提供静态文件，不接收本页面脚本提交的答案。
 
 这是自编的探索测试，未经心理测量、常模、信度或效度验证。不衡量智商，不预测工作表现，不用于招聘、淘汰或诊断。情境题参考排序对应题设假定，不代表所有现实场景下的通用最优行动。
 
 ## 维护
 
-`index.html` 中的 `<script id="quiz-data" type="application/json">` 包含完整题库与选项分数，CSS 和 JavaScript 也都包含在同一文件。`window.EngineeringMindset.calculate(answers)` 提供纯计分函数。
+`index.html` 中的 `<script id="quiz-data" type="application/json">` 包含完整题库与选项分数。`app.js` 中的 `window.EngineeringMindset.calculate(answers)` 提供纯计分函数，答案参数是题目 ID 到选项 ID 的映射。
+
+修改题目数量、题目 ID、维度或计分规则时，应同步更新相关常量与数据版本，避免错误复用旧作答记录。
